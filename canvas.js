@@ -1,5 +1,11 @@
 // Canvas element from HTML
 let canvas = document.getElementById("canvas");
+let btnRectangle = document.getElementById("rectangles");
+let btnClear = document.getElementById("clear-canvas");
+let btnDraw = document.getElementById("draw");
+let runAnimation = false;
+let isDrawing = false;
+let animationIsRunning = false;
 
 // Adjust Canvas Wdith and Height to fit full screen
 canvas.width = window.innerWidth;
@@ -58,7 +64,7 @@ class Rectangle {
 
 let rectangleArray = [];
 
-// Generate
+// Generate Rectangles
 for (let i = 0; i < 50; i++) {
   let rectangleWidth = 50;
   let rectangleHeight = 100;
@@ -88,14 +94,62 @@ for (let i = 0; i < 50; i++) {
 
 // Animation loop
 function animate() {
-  requestAnimationFrame(animate);
-  context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-  // Loop through all the rectangles
-  for (let rec = 0; rec < rectangleArray.length; rec++) {
-    let currentRectangle = rectangleArray[rec];
-    currentRectangle.CheckCollision();
+  if (animationIsRunning) {
+    requestAnimationFrame(animate);
+    context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    // Loop through all the rectangles
+    for (let rec = 0; rec < rectangleArray.length; rec++) {
+      let currentRectangle = rectangleArray[rec];
+      currentRectangle.CheckCollision();
+    }
   }
 }
-animate();
 
-//
+// Run Drawing Animation left click to draw
+function runDrawing() {
+  canvas.addEventListener("mousedown", beginDrawing);
+  canvas.addEventListener("mousemove", draw);
+  canvas.addEventListener("mouseup", stopDrawing);
+}
+
+// Everytime user starts drawing start a new path so the path's do not connect
+function beginDrawing() {
+  //this helps us start a new path every time we start a new draw
+  context.beginPath();
+  isDrawing = true;
+}
+
+// Stop Drawing
+function stopDrawing() {
+  isDrawing = false;
+}
+
+function draw(event) {
+  if (isDrawing) {
+    // drawing width
+    context.lineWidth = 5;
+    // color to draw
+    context.strokeStyle = "black";
+    //client x and y get the position of the mouse in it's current positino
+    context.lineTo(event.clientX, event.clientY);
+    //draw's a line
+    context.stroke();
+  }
+}
+
+// Clears the entire canvas and removes animation
+btnClear.addEventListener("click", () => {
+  animationIsRunning = false;
+  context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+});
+
+// main application relies on user's button clicks
+function run() {
+  btnRectangle.addEventListener("click", () => {
+    animationIsRunning = true;
+    animate();
+  });
+  btnDraw.addEventListener("click", runDrawing);
+}
+
+run();
