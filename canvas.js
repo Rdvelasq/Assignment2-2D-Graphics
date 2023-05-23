@@ -3,6 +3,12 @@ let canvas = document.getElementById("canvas");
 let btnRectangle = document.getElementById("rectangles");
 let btnClear = document.getElementById("clear-canvas");
 let btnDraw = document.getElementById("draw");
+let colorInput = document.getElementById("color");
+let lineWidthInput = document.getElementById("line-width");
+let lineCapSelection = document.getElementById("line-cap");
+let currentLineCap;
+let currentLineWidthv;
+let currentColor;
 let runAnimation = false;
 let isDrawing = false;
 let animationIsRunning = false;
@@ -126,10 +132,11 @@ function stopDrawing() {
 
 function draw(event) {
   if (isDrawing) {
+    context.lineCap = currentLineCap;
     // drawing width
-    context.lineWidth = 5;
-    // color to draw
-    context.strokeStyle = "black";
+    context.lineWidth = currentLineWidth;
+    // color to draw based on what the user chooses
+    context.strokeStyle = currentColor;
     //client x and y get the position of the mouse in it's current positino
     context.lineTo(event.clientX, event.clientY);
     //draw's a line
@@ -141,6 +148,21 @@ function draw(event) {
 btnClear.addEventListener("click", () => {
   animationIsRunning = false;
   context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+});
+
+// add an event listener to the input. When input changes add the value to the current color
+colorInput.addEventListener("input", (event) => {
+  currentColor = event.target.value;
+});
+
+// add an event listener to change line width;
+lineWidthInput.addEventListener("input", (event) => {
+  currentLineWidth = event.target.value;
+});
+
+//line cap event listener
+lineCapSelection.addEventListener("change", (event) => {
+  currentLineCap = event.target.value;
 });
 
 // main application relies on user's button clicks
